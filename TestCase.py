@@ -77,7 +77,7 @@ streamer = DicomPipeLine.Stream_Data(gzip_save_obj, 'F:\Final Year Project\Data 
 # Used the streamer obj to stream all the data.
 prev_folder = None
 prev_scan = None
-for img_array, folder_name, scan_name in streamer.iterate_image_data():
+for img_array, folder_name, scan_name in streamer.iterate_image_data(0, -1):
     
     img_array = cv2.normalize(img_array, dst=None, alpha=0, beta=65535, norm_type=cv2.NORM_MINMAX)
     cv2.imshow('View Window',img_array)
