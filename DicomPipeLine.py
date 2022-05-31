@@ -136,7 +136,7 @@ class DICOM_Input_To_Numpy_Output:
         return patient_description, scans_descriptions, slice_descriptions, series_arrays, scans_descriptions_cols[1:]
 
     def Iterate_To_Numpy(self):
-        
+
         serialize = 0
         for folder in self.all_folders:
 
@@ -185,21 +185,31 @@ class Stream_Data:
     def get_folders(self):
         return [f for f in os.scandir(self.save_path) if f.is_dir()]
 
-    def get_details(self):
-        return
+    def get_patient_details(self, folder_name):
+        
+        if folder_name not in [f.name for f in self.patient_folders]:
+            print(f'folder : {folder_name} not found in database : {self.save_path}')
+            return None, None, None
+        
+        patient_description = pd.read_csv(os.path.join(self.save_path, folder_name, 'patient_description.csv'))
+        scans_descriptions = pd.read_csv(os.path.join(self.save_path, folder_name, 'scans_descriptions.csv'))
+
+        scan_details = []
+        for col in scans_descriptions.columns[2:]:
+            scan_details.append(pd.read_csv(os.path.join(self.save_path, folder_name, f'{col}.csv')))
+
+        return patient_description, scans_descriptions, scan_details
 
     def iterate_image_data(self, From, To):
-        
+
         iterable_paths = []
         names = []
         for folder in self.patient_folders[From : To]:
-            for x in glob.glob(os.path.join(folder, '*.pickle.gzip')):
+            for x in glob.glob(os.path.join(folder, f'*{self.save_obj.extension}')):
                 iterable_paths.append(x)
                 names.append([folder.name, x.split('\\')[-1].split('.')[0]])
 
         queue = []
-
-        print(iterable_paths)
 
         i = 0
         i_max = 0
@@ -220,6 +230,15 @@ class Stream_Data:
 
         return 
 
-    def iterate(self):
+    def iterate(self, folder_name, scan_name):
+        
+        scan_file = scan_name + f'{self.save_obj.extension}'
+        scan_path = os.path.join(self.save_path, folder_name, scan_file)
+        print(scan_path)
+        npy_image_arrays = self.save_obj.load(scan_path)
 
-        yield
+        for frame in npy_image_arrays:
+
+            yield frame 
+
+        return 

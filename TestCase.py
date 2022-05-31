@@ -14,7 +14,7 @@ sub_folders_to_scan = ['2', '3', '4', '5']
 
 # Create a "sort dcm files" object which scans for all the dcm files in a root folder and prepares them for conversion to npy.
 dcm_folders_obj = DicomPipeLine.Sort_DCM_Files(dcm_main_folder_path, sub_folders_to_scan)
-print(dcm_folders_obj.get_all_folders())
+# print(dcm_folders_obj.get_all_folders())
 
 # specify a empty folder to collect all the compressed data to.
 database_path = 'F:\Final Year Project\Data Pipeline\TestDataBase_2'
@@ -67,17 +67,17 @@ to_numpy_obj = DicomPipeLine.DICOM_Input_To_Numpy_Output(
 )
 
 # call the "Iterate_To_Numpy" function of the to_numpy_obj which starts the conversion process.
-to_numpy_obj.Iterate_To_Numpy()
+# to_numpy_obj.Iterate_To_Numpy()
 
 print(to_numpy_obj.error_stack)
 
 # Create a data streaming obj , which will be used to stream data from the newly created database.
-streamer = DicomPipeLine.Stream_Data(gzip_save_obj, 'F:\Final Year Project\Data Pipeline\DataBase_2')
+streamer = DicomPipeLine.Stream_Data(gzip_save_obj, 'F:\Final Year Project\Data Pipeline\DataBase_1')
 
 # Used the streamer obj to stream all the data.
 prev_folder = None
 prev_scan = None
-for img_array, folder_name, scan_name in streamer.iterate_image_data(0, -1):
+for img_array, folder_name, scan_name in streamer.iterate_image_data(0, 1):
     
     img_array = cv2.normalize(img_array, dst=None, alpha=0, beta=65535, norm_type=cv2.NORM_MINMAX)
     cv2.imshow('View Window',img_array)
@@ -88,3 +88,10 @@ for img_array, folder_name, scan_name in streamer.iterate_image_data(0, -1):
         prev_scan = scan_name
 
     cv2.waitKey(2)
+
+patient_details, scans_details, scans_list = streamer.get_patient_details('0')
+
+print(patient_details, scans_details, scans_list)
+
+for x in streamer.iterate('0', 'CT PLAIN'):
+    print(x.shape)
