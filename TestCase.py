@@ -93,5 +93,8 @@ patient_details, scans_details, scans_list = streamer.get_patient_details('0')
 
 print(patient_details, scans_details, scans_list)
 
-for x in streamer.iterate('0', 'CT PLAIN'):
-    print(x.shape)
+p = DicomPipeLine.Path_Settings('', 'F:\Final Year Project\Data Pipeline\TestDataBase_2')
+
+
+# for x, y in zip(streamer.iter('0', 'CT PLAIN'), streamer.iter('0', 'PET WB  (AC)')):
+#     print(x.shape, y.shape)
