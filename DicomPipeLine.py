@@ -4,7 +4,6 @@ from pydicom.pixel_data_handlers.util import apply_voi_lut
 import glob
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 import gzip
 import pickle
@@ -188,18 +187,18 @@ class DCM_Input_To_NPY_Output:
 
             source_folder, target_folder = self.path_settings_obj.pop()
 
-            try:
-                print(f'- processing folder {source_folder[0].path}')
-                patient_desc, scans_desc, slice_desc, arrays, names = self.To_Numpy(source_folder)
-            except Exception as e:
-                error_template = {}
-                error_template['folder name'] = source_folder[0].name
-                error_template['folder path'] = source_folder[0].path 
-                error_template['error message'] = str(e)
-                error_template['error arguments'] = str(e.args)
-                self.error_stack.append(error_template)
-                print(error_template)
-                continue
+            
+            print(f'- processing folder {source_folder[0].path}')
+            patient_desc, scans_desc, slice_desc, arrays, names = self.To_Numpy(source_folder)
+            
+                # error_template = {}
+                # error_template['folder name'] = source_folder[0].name
+                # error_template['folder path'] = source_folder[0].path 
+                # error_template['error message'] = str(e)
+                # error_template['error arguments'] = str(e.args)
+                # self.error_stack.append(error_template)
+                # print(error_template)
+                # continue
 
             save_path = os.path.join(self.path_settings_obj.save_path, target_folder)
 
