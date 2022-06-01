@@ -44,9 +44,15 @@ class Path_Settings:
         
         self.Refresh()
 
+
         self.saved_serialization = [int(f.name) for f in self.save_folders]
-        self.expected_serialization = sorted([x for x in range(1, max(self.saved_serialization)) if x not in self.saved_serialization])
-        self.serialize = max(self.saved_serialization)
+        if len(self.saved_serialization) != 0:
+            self.expected_serialization = sorted([x for x in range(1, max(self.saved_serialization)) if x not in self.saved_serialization])
+            self.serialize = max(self.saved_serialization)
+        else:
+            self.expected_serialization = []
+            self.saved_serialization = []
+            self.serialize = 0
 
     def Check_Path(self):
         return
