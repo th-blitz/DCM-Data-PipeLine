@@ -187,18 +187,18 @@ class DCM_Input_To_NPY_Output:
 
             source_folder, target_folder = self.path_settings_obj.pop()
 
-            
-            print(f'- processing folder {source_folder[0].path}')
-            patient_desc, scans_desc, slice_desc, arrays, names = self.To_Numpy(source_folder)
-            
-                # error_template = {}
-                # error_template['folder name'] = source_folder[0].name
-                # error_template['folder path'] = source_folder[0].path 
-                # error_template['error message'] = str(e)
-                # error_template['error arguments'] = str(e.args)
-                # self.error_stack.append(error_template)
-                # print(error_template)
-                # continue
+            try:
+                print(f'- processing folder {source_folder[0].path}')
+                patient_desc, scans_desc, slice_desc, arrays, names = self.To_Numpy(source_folder)
+            except:
+                error_template = {}
+                error_template['folder name'] = source_folder[0].name
+                error_template['folder path'] = source_folder[0].path 
+                error_template['error message'] = str(e)
+                error_template['error arguments'] = str(e.args)
+                self.error_stack.append(error_template)
+                print(error_template)
+                continue
 
             save_path = os.path.join(self.path_settings_obj.save_path, target_folder)
 
@@ -305,15 +305,22 @@ class Stream_Data:
 
         return 
 
+
     def iter(self, folder_name, scan_name):
-        
+            
         scan_file = scan_name + f'{self.save_obj.extension}'
         scan_path = os.path.join(self.save_path, folder_name, scan_file)
         print(scan_path)
         npy_image_arrays = self.save_obj.load(scan_path)
 
-        for frame in npy_image_arrays:
-
-            yield frame 
+        for array in npy_image_arrays:
+            yield array 
 
         return 
+
+    def get(self, folder_name, scan_name):
+            
+        scan_file = scan_name + f'{self.save_obj.extension}'
+        scan_path = os.path.join(self.save_path, folder_name, scan_file)
+        print(scan_path)
+        return self.save_obj.load(scan_path)
