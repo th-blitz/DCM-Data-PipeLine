@@ -3,4 +3,4 @@ dcm preprocessor
 
 
 ## References 
-1. matlab's procrustes function by @ashna111 https://github.com/ashna111/multimodal-image-fusion-to-detect-brain-tumors
+- matlab's procrustes function by @ashna111 https://github.com/ashna111/multimodal-image-fusion-to-detect-brain-tumors
