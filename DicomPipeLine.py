@@ -41,8 +41,7 @@ class Path_Settings:
         # list of os.path objs for eg: [<os_obj>'1.3.24.34342', [<os_obj>'2', <os_obj>'3', <os_obj>'4']]
         self.source_folders = []
         
-        self.Refresh()
-
+        self.Refresh( print_progress = False )
 
         self.saved_serialization = [int(f.name) for f in self.save_folders]
         if len(self.saved_serialization) != 0:
@@ -67,14 +66,14 @@ class Path_Settings:
             serialize = self.serialize
         return source_folder, str(serialize) 
         
-    def Refresh(self):
+    def Refresh(self, print_progress = True):
         self.save_folders = [f for f in os.scandir(self.save_path) if f.is_dir()]
         self.processed_source_folders = []
         for f in self.save_folders:
             patient_desc = pd.read_csv(os.path.join(f.path, 'patient_description.csv'))
             self.processed_source_folders.append(patient_desc['Values'][0])
         
-        self.source_folders = self.get_all_source_folders()
+        self.source_folders = self.get_all_source_folders(print_progress = print_progress)
 
         for f_name in self.processed_source_folders:
             for f in self.source_folders:
@@ -87,23 +86,34 @@ class Path_Settings:
     def Reset(self):
         return 
 
-    def get_all_source_folders(self):
+    def get_all_source_folders(self, print_progress = True):
 
         all_folders = []
         total_count = 0
 
-        for folder in tqdm([f for f in os.scandir(self.source_path) if f.is_dir()]):
-            subs = [f for f in os.scandir(folder.path) if f.is_dir()]
-            sub_name = folder.name 
-            temp = []
-            for sub in subs:
-                if sub.name in self.scan_for_folders:
-                    temp.append(sub)
-            if len(temp) > 0:
-                all_folders.append([folder, temp])
-                total_count += len(temp)
-
-        print(f'- Found {len(all_folders)} folders with a total of {total_count} scans')
+        if print_progress == True:
+            for folder in tqdm([f for f in os.scandir(self.source_path) if f.is_dir()]):
+                subs = [f for f in os.scandir(folder.path) if f.is_dir()]
+                sub_name = folder.name 
+                temp = []
+                for sub in subs:
+                    if sub.name in self.scan_for_folders:
+                        temp.append(sub)
+                if len(temp) > 0:
+                    all_folders.append([folder, temp])
+                    total_count += len(temp)
+            print(f'- Found {len(all_folders)} folders with a total of {total_count} scans')
+        else:
+            for folder in [f for f in os.scandir(self.source_path) if f.is_dir()]:
+                subs = [f for f in os.scandir(folder.path) if f.is_dir()]
+                sub_name = folder.name 
+                temp = []
+                for sub in subs:
+                    if sub.name in self.scan_for_folders:
+                        temp.append(sub)
+                if len(temp) > 0:
+                    all_folders.append([folder, temp])
+                    total_count += len(temp)
         return all_folders 
 
 
@@ -324,3 +334,5 @@ class Stream_Data:
         scan_path = os.path.join(self.save_path, folder_name, scan_file)
         print(scan_path)
         return self.save_obj.load(scan_path)
+
+    
