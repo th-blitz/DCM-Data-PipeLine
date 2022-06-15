@@ -259,6 +259,20 @@ class Pickle_Gzip:
             return pickle.load(f)
 
 
+class Save:
+
+    def __init__(self, save_folder_path):
+        self.save_folder_path = save_folder_path
+        self.save_obj = Pickle_Gzip(save_folder_path)
+
+    def save(self, data, file_name):
+        self.save_obj.save(data, file_name)
+
+    def load(self, file_name):
+        load_path = os.path.join(self.save_folder_path, file_name + self.extension)
+        return self.save_obj.load(load_path)
+
+
 class Stream_Data:
 
     def __init__(self, path_settings_obj):    
@@ -335,4 +349,5 @@ class Stream_Data:
         print(scan_path)
         return self.save_obj.load(scan_path)
 
-    
+
+
