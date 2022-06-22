@@ -8,6 +8,7 @@ from tqdm import tqdm
 import gzip
 import pickle
 import gc
+import registration as reg
 
 Main_Attributes = {
     'Source_Folder':'sourceFolder', 
@@ -280,6 +281,30 @@ class Stream_Data:
         self.save_path = path_settings_obj.save_path
         self.patient_folders = sorted(self.get_folders(), key = lambda x: int(x.name))
         
+    def save_transform_points(self,folder, img_a, img_b, points_a, points_b):
+        save_path = os.path.join(self.save_path, folder)
+        self.save_obj.path = save_path
+        self.save_obj.save([img_a, img_b, points_a, points_b], 'transformation_points')
+        return
+
+    def get_scans(self, folder_name, scan_a, scan_b, transform = False):
+        scan_a_array = self.get(folder_name, scan_a)
+        scan_b_array = self.get(folder_name, scan_b)
+
+        if transform == False:
+            return scan_a_array, scan_b_array
+        
+        points_path = os.path.join(self.save_path, folder_name, f'transformation_points{self.save_obj.extension}')
+        img_a, img_b, pts_a, pts_b = self.save_obj.load(points_path)
+        trf_obj = reg.TransFormation(img_a, img_b, pts_a, pts_b)
+
+        transformed_frames = []
+        for y in scan_b_array:
+            transformed_frames.append(trf_obj.transform(y))
+
+        transformed_frames = np.array(transformed_frames)
+        return scan_a_array, transformed_frames
+
 
     def get_folders(self):
         return [f for f in os.scandir(self.save_path) if f.is_dir()]
@@ -343,11 +368,13 @@ class Stream_Data:
         return 
 
     def get(self, folder_name, scan_name):
-            
         scan_file = scan_name + f'{self.save_obj.extension}'
         scan_path = os.path.join(self.save_path, folder_name, scan_file)
         print(scan_path)
         return self.save_obj.load(scan_path)
+        
+
+    
 
 
 

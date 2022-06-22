@@ -1,4 +1,3 @@
-
 import numpy as np
 import cv2 
 
@@ -28,6 +27,7 @@ class TransFormation:
 
         return cv2.warpAffine(self.img_b, self.M[0:2,:], (self.height, self.width))
 
+    # procrustes function by - 
     def procrustes(self, X, Y, scaling=True, reflection='best'):
         """
         A port of MATLAB's `procrustes` function to Numpy.
@@ -145,11 +145,10 @@ class TransFormation:
 
     def info(self):
         info = {
-            'rows' : f'{self.height}',
-            'columns' : f'{self.width}',
-            'reference_img': self.img_a,
-            'transformed_img': self.img_b,
-            'Transform_values': self.Tform
+            'img_a': self.img_a,
+            'img_b': self.img_b,
+            'a_points': self.a_points,
+            'b_points':self.b_points
         }
 
         return info 
