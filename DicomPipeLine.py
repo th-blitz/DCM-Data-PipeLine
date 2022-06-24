@@ -57,7 +57,9 @@ class Path_Settings:
         return
 
     def pop(self):
-
+        
+        if len(self.source_folders) == 0:
+            return None, None
         source_folder = self.source_folders.pop(0)
         self.processed_source_folders.append(source_folder[0].name)
         if len(self.expected_serialization) != 0:
@@ -197,6 +199,8 @@ class DCM_Input_To_NPY_Output:
         while iteration_count > 0:
 
             source_folder, target_folder = self.path_settings_obj.pop()
+            if source_folder == None:
+                return
 
             try:
                 print(f'- processing folder {source_folder[0].path}')
